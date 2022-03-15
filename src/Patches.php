@@ -119,9 +119,7 @@ class Patches implements PluginInterface, EventSubscriberInterface {
               if (filter_var($url, FILTER_VALIDATE_URL) === false) {
                 $path = $manager->getInstallPath($package).'/'.$url;
                 var_dump($path);
-                if (file_exists($path)) {
-                  $extra['patches'][$packagename][$description] = $path;
-                }
+                $extra['patches'][$packagename][$description] = $path;
               }
             }
           }
@@ -212,9 +210,7 @@ class Patches implements PluginInterface, EventSubscriberInterface {
               if (filter_var($url, FILTER_VALIDATE_URL) === false) {
                 $path = $manager->getInstallPath($package).'/'.$url;
                 var_dump($path);
-                if (file_exists($path)) {
-                  $extra['patches'][$packagename][$description] = $path;
-                }
+                $extra['patches'][$packagename][$description] = $path;
               }
             }
           }
