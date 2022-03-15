@@ -118,12 +118,14 @@ class Patches implements PluginInterface, EventSubscriberInterface {
             foreach ($patchinfos as $description => $url) {
               if (filter_var($url, FILTER_VALIDATE_URL) === false) {
                 $path = $manager->getInstallPath($package).'/'.$url;
+                var_dump($path);
                 if (file_exists($path)) {
                   $extra['patches'][$packagename][$description] = $path;
                 }
               }
             }
           }
+          var_dump($extra['patches']);
           $this->installedPatches[$package->getName()] = $extra['patches'];
         }
         $patches = isset($extra['patches']) ? $extra['patches'] : array();
@@ -209,12 +211,14 @@ class Patches implements PluginInterface, EventSubscriberInterface {
             foreach ($patchinfos as $description => $url) {
               if (filter_var($url, FILTER_VALIDATE_URL) === false) {
                 $path = $manager->getInstallPath($package).'/'.$url;
+                var_dump($path);
                 if (file_exists($path)) {
                   $extra['patches'][$packagename][$description] = $path;
                 }
               }
             }
           }
+          var_dump($extra['patches']);
           $this->patches = $this->arrayMergeRecursiveDistinct($this->patches, $extra['patches']);
         }
         // Unset installed patches for this package
