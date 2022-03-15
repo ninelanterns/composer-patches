@@ -101,6 +101,8 @@ class Patches implements PluginInterface, EventSubscriberInterface {
       $extra = $this->composer->getPackage()->getExtra();
       $patches_ignore = isset($extra['patches-ignore']) ? $extra['patches-ignore'] : array();
 
+      $manager = $event->getComposer()->getInstallationManager();
+
       $tmp_patches = $this->grabPatches();
       foreach ($packages as $package) {
         $extra = $package->getExtra();
@@ -109,6 +111,16 @@ class Patches implements PluginInterface, EventSubscriberInterface {
             foreach ($patches_ignore[$package->getName()] as $package_name => $patches) {
               if (isset($extra['patches'][$package_name])) {
                 $extra['patches'][$package_name] = array_diff($extra['patches'][$package_name], $patches);
+              }
+            }
+          }
+          foreach ($extra['patches'] as $packagename => $patchinfos) {
+            foreach ($patchinfos as $description => $url) {
+              if (filter_var($url, FILTER_VALIDATE_URL) === false) {
+                $path = $manager->getInstallPath($package).'/'.$url;
+                if (file_exists($path)) {
+                  $extra['patches'][$packagename][$description] = $path;
+                }
               }
             }
           }
@@ -174,6 +186,7 @@ class Patches implements PluginInterface, EventSubscriberInterface {
       $this->io->write('<info>No patches supplied.</info>');
     }
 
+    $manager = $event->getComposer()->getInstallationManager();
     $extra = $this->composer->getPackage()->getExtra();
     $patches_ignore = isset($extra['patches-ignore']) ? $extra['patches-ignore'] : array();
 
@@ -189,6 +202,16 @@ class Patches implements PluginInterface, EventSubscriberInterface {
             foreach ($patches_ignore[$package->getName()] as $package_name => $patches) {
               if (isset($extra['patches'][$package_name])) {
                 $extra['patches'][$package_name] = array_diff($extra['patches'][$package_name], $patches);
+              }
+            }
+          }
+          foreach ($extra['patches'] as $packagename => $patchinfos) {
+            foreach ($patchinfos as $description => $url) {
+              if (filter_var($url, FILTER_VALIDATE_URL) === false) {
+                $path = $manager->getInstallPath($package).'/'.$url;
+                if (file_exists($path)) {
+                  $extra['patches'][$packagename][$description] = $path;
+                }
               }
             }
           }
@@ -323,6 +346,8 @@ class Patches implements PluginInterface, EventSubscriberInterface {
       catch (\Exception $e) {
         $this->io->write('   <error>Could not apply patch! Skipping. The error was: ' . $e->getMessage() . '</error>');
         if ($exitOnFailure) {
+          echo $e->getMessage();
+          echo $e->getTraceAsString();
           throw new \Exception("Cannot apply patch $description ($url)!");
         }
       }
